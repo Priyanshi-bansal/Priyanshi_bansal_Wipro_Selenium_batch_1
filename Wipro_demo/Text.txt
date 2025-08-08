@@ -1,0 +1,283 @@
+import React, { useEffect, useState } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+  Navigate,
+} from "react-router-dom";
+import { queryClient } from "./lib/queryClient";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { useAuth } from "@/hooks/useAuth";
+import NotFound from "@/pages/not-found";
+import Landing from "@/pages/Landing";
+import Login from "@/pages/Login";
+import Home from "@/pages/Home";
+import PropertySearch from "@/pages/PropertySearch";
+import Dashboard from "@/pages/Dashboard";
+import DashboardSearches from "@/pages/DashboardSearches";
+import DashboardVerified from "@/pages/DashboardVerified";
+import DashboardPending from "@/pages/DashboardPending";
+import DashboardReports from "@/pages/DashboardReports";
+import AdminPanel from "@/pages/AdminPanel";
+import AdminPending from "@/pages/AdminPending";
+import AdminInProgress from "@/pages/AdminInProgress";
+import AdminCompleted from "@/pages/AdminCompleted";
+import AdminFlagged from "@/pages/AdminFlagged";
+import VerificationRequest from "@/pages/VerificationRequest";
+import Reports from "@/pages/Reports";
+import Analytics from "@/pages/Analytics";
+import About from "@/pages/About";
+import Pricing from "@/pages/Pricing";
+import SocietyDatabase from "@/pages/SocietyDatabase";
+import MLAnalysis from "@/pages/MLAnalysis";
+import TestAuth from "@/pages/TestAuth";
+import QuickLogin from "@/pages/QuickLogin";
+import EmailVerification from "@/pages/EmailVerification";
+import Register from "@/pages/Register";
+import Complaint from "@/pages/Complaint";
+import MyComplaints from "@/pages/MyComplaints";
+import AdminComplaints from "@/pages/AdminComplaints";
+import ComplaintRouter from "@/pages/ComplaintRouter";
+import VerificationDetails from "@/pages/VerificationDetails";
+import VerifyProperty from "@/pages/VerifyProperty";
+import Blog from "@/pages/Blog";
+import ContactUs from "./pages/ContanctUs";
+
+const Loader = () => {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p className="text-gray-600">Loading...</p>
+      </div>
+    </div>
+  );
+};
+
+function AppRouter() {
+  const { isAuthenticated, isLoading } = useAuth();
+  const location = useLocation();
+
+  console.log("Auth State:", {
+    isAuthenticated,
+    isLoading,
+    path: location.pathname,
+  });
+
+  // Show loader only for a short time to avoid blank pages
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  return (
+    <Routes location={location} key={location.pathname}>
+      {/* Public routes - always accessible */}
+      <Route path="/" element={<Landing />} />
+      <Route path="/home" element={<Home />} />
+      <Route path="/search" element={<PropertySearch />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/pricing" element={<Pricing />} />
+      <Route path="/blog" element={<Blog />} />
+      <Route path="/contact-us" element={<ContactUs />} />
+
+      {/* Auth routes - redirect if already authenticated */}
+      <Route
+        path="/login"
+        element={
+          isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          isAuthenticated ? <Navigate to="/dashboard" replace /> : <Register />
+        }
+      />
+      <Route path="/email-verification" element={<EmailVerification />} />
+      <Route path="/test-auth" element={<TestAuth />} />
+      <Route path="/quick-login" element={<QuickLogin />} />
+
+      {/* Semi-public routes that work better with auth */}
+      <Route path="/verify-property" element={<VerifyProperty />} />
+      <Route path="/complaint" element={<ComplaintRouter />} />
+
+      {/* Protected routes */}
+      <Route
+        path="/dashboard"
+        element={
+          isAuthenticated ? <Dashboard /> : <Navigate to="/login" replace />
+        }
+      />
+      <Route
+        path="/dashboard/searches"
+        element={
+          isAuthenticated ? (
+            <DashboardSearches />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/dashboard/verified"
+        element={
+          isAuthenticated ? (
+            <DashboardVerified />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/dashboard/pending"
+        element={
+          isAuthenticated ? (
+            <DashboardPending />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/dashboard/reports"
+        element={
+          isAuthenticated ? (
+            <DashboardReports />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/verification"
+        element={
+          isAuthenticated ? (
+            <VerificationRequest />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/verification/:id"
+        element={
+          isAuthenticated ? (
+            <VerificationDetails />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/reports"
+        element={
+          isAuthenticated ? <Reports /> : <Navigate to="/login" replace />
+        }
+      />
+      <Route
+        path="/analytics"
+        element={
+          isAuthenticated ? <Analytics /> : <Navigate to="/login" replace />
+        }
+      />
+      <Route
+        path="/societies"
+        element={
+          isAuthenticated ? (
+            <SocietyDatabase />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/ml-analysis"
+        element={
+          isAuthenticated ? <MLAnalysis /> : <Navigate to="/login" replace />
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          isAuthenticated ? <AdminPanel /> : <Navigate to="/login" replace />
+        }
+      />
+      <Route
+        path="/admin-panel"
+        element={
+          isAuthenticated ? <AdminPanel /> : <Navigate to="/login" replace />
+        }
+      />
+      <Route
+        path="/admin/pending"
+        element={
+          isAuthenticated ? <AdminPending /> : <Navigate to="/login" replace />
+        }
+      />
+      <Route
+        path="/admin/in-progress"
+        element={
+          isAuthenticated ? (
+            <AdminInProgress />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/admin/completed"
+        element={
+          isAuthenticated ? (
+            <AdminCompleted />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/admin/flagged"
+        element={
+          isAuthenticated ? <AdminFlagged /> : <Navigate to="/login" replace />
+        }
+      />
+      <Route
+        path="/my-complaints"
+        element={
+          isAuthenticated ? <MyComplaints /> : <Navigate to="/login" replace />
+        }
+      />
+
+      {/* Redirect admin complaint routes */}
+      <Route
+        path="/admin/complaint"
+        element={
+          <Navigate
+            to={location.search ? `/complaint${location.search}` : "/complaint"}
+            replace
+          />
+        }
+      />
+
+      {/* Fallback route */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+}
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <TooltipProvider>
+          <Toaster />
+          <AppRouter />
+        </TooltipProvider>
+      </Router>
+    </QueryClientProvider>
+  );
+}
+
+export default App;
